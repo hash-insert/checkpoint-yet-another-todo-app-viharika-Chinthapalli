@@ -1,5 +1,5 @@
 const express = require('express');
-// const mongoose = require('mongoose');
+const mongoose = require('mongoose');
 const cors = require('cors');
 
 const app = express();
@@ -16,7 +16,7 @@ const todos = JSON.parse(fs.readFileSync('./todos.json'));
 // mongoose.connect('mongodb://localhost:27017/todo', {useNewUrlParser: true, useUnifiedTopology: true});
 
 // import the schema from './models/Todo.js'
-// const Todo = require('./models/Todo');
+const Todo = require('./models/Todo');
 /*
 the below API endpoint should return all the todos in the todos.json file
 Sample response:
