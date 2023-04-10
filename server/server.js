@@ -62,19 +62,19 @@ Sample response:
 */
 
 // Define a route to add a new todo
-// app.post('/todo/new', async (req, res) => {
-//     try {
-//         const newTodo = new Todo({
-//             text: req.body.text,
-//             complete: false
-//         });
-//         const savedTodo = await newTodo.save();
-//         res.json(savedTodo);
-//     }catch (error) {
-//         console.error(error);
-//         res.status(500).json({ message: 'Error adding todo' });
-//     }
-// });
+app.post('/todo/new', async (req, res) => {
+    try {
+        const newTodo = new Todo({
+            text: req.body.text,
+            complete: false
+        });
+        const savedTodo = await newTodo.save();
+        res.json(savedTodo);
+    }catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error adding todo' });
+    }
+});
 
 
 // the below API endpoint should delete a todo from the todos.json file
