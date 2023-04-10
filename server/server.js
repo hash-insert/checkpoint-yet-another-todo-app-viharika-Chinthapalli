@@ -1,20 +1,19 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-
+const bodyParser = require('body-parser');
 const app = express();
 
 app.use(express.json());
 app.use(cors());
-
-
-const fs = require('fs');
-
-const todos = JSON.parse(fs.readFileSync('./todos.json'));
+// Use bodyParser to parse JSON request bodies
+app.use(bodyParser.json());
 
 // Connect to MongoDB database using mongoose 
-// mongoose.connect('mongodb://localhost:27017/todo', {useNewUrlParser: true, useUnifiedTopology: true});
-
+mongoose.connect(('mongodb+srv://viharikaa:mini%40123@mydata.8zx6rvr.mongodb.net/todoAppData'),{
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+})
 // import the schema from './models/Todo.js'
 const Todo = require('./models/Todo');
 /*
@@ -34,8 +33,15 @@ Sample response:
     ]
 */
 
-app.get('/todo', (req, res) => {
-    res.json(todos);
+app.get('/todo', async (req, res) => {
+    Todo.find({}, (err, data) => {
+        if (err) {
+          console.error(err);
+          res.status(500).send('An error occurred while retrieving the data.');
+        } else {
+          res.send(data);
+        }
+    });
 });
 
 
@@ -55,18 +61,20 @@ Sample response:
 }
 */
 
-app.post('/todo/new', (req, res) => {
-    const todo = {
-        id: Math.floor(Math.random() * 100000),
-        text: req.body.text,
-        complete: false
-    };
-
-    todos.push(todo);
-    fs.writeFileSync('./todos.json', JSON.stringify(todos));
-
-    res.json(todo);
-});
+// Define a route to add a new todo
+// app.post('/todo/new', async (req, res) => {
+//     try {
+//         const newTodo = new Todo({
+//             text: req.body.text,
+//             complete: false
+//         });
+//         const savedTodo = await newTodo.save();
+//         res.json(savedTodo);
+//     }catch (error) {
+//         console.error(error);
+//         res.status(500).json({ message: 'Error adding todo' });
+//     }
+// });
 
 
 // the below API endpoint should delete a todo from the todos.json file
@@ -81,17 +89,17 @@ Sample response:
 }
 */
 
-app.delete('/todo/delete/:id', (req, res) => {
-    const todo = todos.find(todo => todo.id === parseInt(req.params.id));
+// app.delete('/todo/delete/:id', (req, res) => {
+//     const todo = todos.find(todo => todo.id === parseInt(req.params.id));
 
-    const index = todos.indexOf(todo);
+//     const index = todos.indexOf(todo);
 
-    todos.splice(index, 1);
+//     todos.splice(index, 1);
 
-    fs.writeFileSync('./todos.json', JSON.stringify(todos));
+//     fs.writeFileSync('./todos.json', JSON.stringify(todos));
 
-    res.json(todo);
-});
+//     res.json(todo);
+// });
 
 
 // the below API endpoint should toggle the complete status of a todo in the todos.json file
@@ -106,15 +114,15 @@ Sample response:
 }
 */
 
-app.get('/todo/complete/:id', (req, res) => {
-    const todo = todos.find(todo => todo.id === parseInt(req.params.id));
+// app.get('/todo/complete/:id', (req, res) => {
+//     const todo = todos.find(todo => todo.id === parseInt(req.params.id));
 
-    todo.complete = !todo.complete;
+//     todo.complete = !todo.complete;
 
-    fs.writeFileSync('./todos.json', JSON.stringify(todos));
+//     fs.writeFileSync('./todos.json', JSON.stringify(todos));
 
-    res.json(todo);
-});
+//     res.json(todo);
+// });
 
 
 app.listen(3002, () => console.log("Server is running on port 3002"));

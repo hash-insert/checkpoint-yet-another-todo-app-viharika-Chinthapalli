@@ -55,6 +55,8 @@ function App() {
         setTodos(todos => [...todos, data]);
         setPopupActive(false);
         setNewTodo("");
+
+       
     }
 
 
