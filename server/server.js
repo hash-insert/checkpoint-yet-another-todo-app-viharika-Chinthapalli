@@ -8,11 +8,12 @@ app.use(express.json());
 app.use(cors());
 // Use bodyParser to parse JSON request bodies
 app.use(bodyParser.json());
+mongoose.set('strictQuery', false);
 
 // Connect to MongoDB database using mongoose 
 mongoose.connect(('mongodb+srv://viharikaa:mini%40123@mydata.8zx6rvr.mongodb.net/todoAppData'),{
   useNewUrlParser: true,
-  useUnifiedTopology: true
+  useUnifiedTopology: true,
 })
 // import the schema from './models/Todo.js'
 const Todo = require('./models/Todo');
@@ -89,18 +90,18 @@ Sample response:
 }
 */
 
-// app.delete('/todo/delete/:id', (req, res) => {
-//     const todo = todos.find(todo => todo.id === parseInt(req.params.id));
 
-//     const index = todos.indexOf(todo);
-
-//     todos.splice(index, 1);
-
-//     fs.writeFileSync('./todos.json', JSON.stringify(todos));
-
-//     res.json(todo);
-// });
-
+app.delete('/todo/delete/:id', async (req, res) => {
+    const id = req.params.id;
+    console.log("Deleting todo with ID:", id);
+    try {
+      const deletedTodo = await Todo.deleteOne({_id: id});
+      res.json({id: deletedTodo._id});
+    } catch (err) {
+      res.status(500).json({ message: err.message });
+    }
+  });
+  
 
 // the below API endpoint should toggle the complete status of a todo in the todos.json file
 /*
@@ -114,15 +115,20 @@ Sample response:
 }
 */
 
-// app.get('/todo/complete/:id', (req, res) => {
-//     const todo = todos.find(todo => todo.id === parseInt(req.params.id));
 
-//     todo.complete = !todo.complete;
+app.put('/todo/complete/:id', async (req, res) => {
+    try {
+      const todo = await Todo.findById(req.params.id);
+      todo.complete = !todo.complete;
+      const updatedTodo = await todo.save();
+      res.json(updatedTodo);
+    } catch (err) {
+      console.error(err);
+      res.status(500).send('An error occurred while completing the todo.');
+    }
+  });
+  
 
-//     fs.writeFileSync('./todos.json', JSON.stringify(todos));
-
-//     res.json(todo);
-// });
 
 
 app.listen(3002, () => console.log("Server is running on port 3002"));

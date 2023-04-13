@@ -12,18 +12,20 @@ function App() {
     }, []);
 
     const GetTodos = () => {  
-        fetch(API_BASE + "/todos")
+        fetch(API_BASE + "/todo")
             .then(res => res.json())
             .then(data => setTodos(data))
             .catch(err => console.log("Error: ", err));
     }   
 
     const completeTodo = async id => {
-        const data = await fetch(API_BASE + "/todo/complete/" + id)
+        const data = await fetch(API_BASE + "/todo/complete/" + id, {
+            method: "PUT",
+        })
             .then(res => res.json())   
 
         setTodos(todos => todos.map(todo => {
-            if (todo.id === data.id) {
+            if (todo._id === data._id) {
                 todo.complete = data.complete;
             }
 
@@ -33,13 +35,25 @@ function App() {
 
       
 
-    const deleteTodo = async id => {
-        const data  = await fetch(API_BASE + "/todo/delete/" + id, {
-            method: "DELETE"
-        }).then(res => res.json());
+    // const deleteTodo = async id => {
+    //     const data  = await fetch(API_BASE + "/todo/delete/" + id, {
+    //         method: "DELETE"
+    //     }).then(res => res.json());
+    //     console.log(data);
+    //     setTodos(todos => todos.filter(todo => todo._id !== data._id));
+    // }
 
-        setTodos(todos => todos.filter(todo => todo.id !== data.id));
-    }
+    const deleteTodo = async (id) => {
+        const response = await fetch(`http://localhost:3002/todo/delete/${id}`, {
+          method: "DELETE",
+        });
+        
+        if (response.ok) {
+          setTodos(todos.filter((todo) => todo._id !== id));
+        } else {
+          console.error("Failed to delete todo.");
+        }
+      };
 
     const addTodo = async () => {
         const data = await fetch(API_BASE + "/todo/new", {
@@ -55,8 +69,6 @@ function App() {
         setTodos(todos => [...todos, data]);
         setPopupActive(false);
         setNewTodo("");
-
-       
     }
 
 
@@ -71,14 +83,14 @@ function App() {
                 {todos.map(todo => (
 
                 <div className={"todo " + (todo.complete ? "is-complete" : "")} 
-                     key={todo.id} onClick={() => completeTodo(todo.id)}>
+                     key={todo.id} onClick={() => completeTodo(todo._id)}>
 
                     <div className="checkbox"></div>
 
                     <div className="text">{ todo.text }</div>
 
                     <div className="delete-todo" onClick={() => deleteTodo
-                    (todo.id)}>x</div>
+                    (todo._id)}>x</div>
                 </div>
                 ))}
 
