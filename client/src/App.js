@@ -33,16 +33,6 @@ function App() {
         }));
     }
 
-      
-
-    // const deleteTodo = async id => {
-    //     const data  = await fetch(API_BASE + "/todo/delete/" + id, {
-    //         method: "DELETE"
-    //     }).then(res => res.json());
-    //     console.log(data);
-    //     setTodos(todos => todos.filter(todo => todo._id !== data._id));
-    // }
-
     const deleteTodo = async (id) => {
         const response = await fetch(`http://localhost:3002/todo/delete/${id}`, {
           method: "DELETE",
