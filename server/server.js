@@ -38,14 +38,13 @@ Sample response:
 */
 
 app.get("/todo", async (req, res) => {
-  Todo.find({}, (err, data) => {
-    if (err) {
-      console.error(err);
-      res.status(500).send("An error occurred while retrieving the data.");
-    } else {
-      res.send(data);
-    }
-  });
+  try {
+    const data = await Todo.find({});
+    res.send(data);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("An error occurred while retrieving the data.");
+  }
 });
 
 // the below API endpoint should add a new todo to the todos.json file
@@ -65,10 +64,15 @@ Sample response:
 */
 
 // Define a route to add a new todo
+
 app.post("/todo/new", async (req, res) => {
   try {
+    const { text } = req.body;
+    if (!text || text.trim() === "") {
+      return res.status(400).json({ message: "Text field cannot be empty." });
+    }
     const newTodo = new Todo({
-      text: req.body.text,
+      text: text,
       complete: false,
     });
     const savedTodo = await newTodo.save();
